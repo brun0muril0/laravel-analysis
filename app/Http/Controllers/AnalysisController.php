@@ -14,6 +14,11 @@ class AnalysisController extends Controller
         private AnalysisService $analysisService
     ) {}
 
+    /**
+     * Executa o cálculo de análise chamando o service
+     * e retorna o resultado em formato JSON.
+     * Em caso de erro, registra no log e retorna status 500.
+     */
     public function getAnalysis(): JsonResponse
     {
         try {

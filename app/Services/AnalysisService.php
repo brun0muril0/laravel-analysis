@@ -7,9 +7,8 @@ use App\Models\Data;
 class AnalysisService
 {
     /**
-     * Realiza o cálculo estatístico diretamente no banco
-     * Somando todos os valores dos últimos 10 anos,
-     * multiplicados pelo fator de 1.07.
+     * Calcula o total dos valores dos últimos 10 anos multiplicando
+     * pelo fator de 1.07 e retorna o resultado.
      */
     public function calculate(): float
     {
