@@ -1,66 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Analysis
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Tecnologias
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-%234F5B93.svg?style=for-the-badge&logo=php&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-%230249ED.svg?style=for-the-badge&logo=docker&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-%2307405E.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+- **Framework:** Laravel 10  
+- **PHP:** ^8.2  
+- **Containers:** Docker 
+- **Banco de dados:** SQLite  
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+##  Funcionalidade Principal
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- A API possui um endpoint que retorna o total dos valores registrados nos últimos 10 anos, multiplicado por 1.07 e arredondado:
 
-## Learning Laravel
+    ```http
+    GET /api/analysis
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    {
+      "result": 123.45
+    }
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+##  Setup e Uso com Docker
 
-## Laravel Sponsors
+### Pré-requisitos
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Git
+- Docker
 
-### Premium Partners
+### Passos
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. Clone o projeto:
+   ```bash
+   git clone https://github.com/brun0muril0/laravel-analysis.git
+   cd laravel-analysis
 
-## Contributing
+2. Crie o `.env` baseado no `.env.example`: 
+    ```bash
+    cp .env.example .env
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Após criar o `.env`, remova a conexão com o banco MySql e substitua pelo SQLite:
+    ```bash
+    DB_CONNECTION=sqlite
 
-## Code of Conduct
+4. Construa e execute o container:
+   ```bash
+   docker build -t api_laravel_analysis .
+   docker run --rm -d -p 3000:3000/tcp -p 8000:8000/tcp api_laravel_analysis:latest
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. A API estará disponível em:
+   ```arduino
+   http://localhost:3000
 
-## Security Vulnerabilities
+## Rotas Disponíveis
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+A aplicação possui o seguinte endpoint:
 
-## License
+| Método | Endpoint       | Descrição                     |
+|--------|----------------|-------------------------------|
+| GET    | /api/analysis  | Retorna o resultado da soma dos valores no período solicitado |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Exemplo de requisição:**
+
+    curl http://localhost:3000/api/analysis
+
+**Exemplo de resposta:**
+
+    {
+      "result": 123.45
+    }
+
+## Estrutura Interna
+
+A aplicação segue uma arquitetura simples de Model + Controller + Service:
+
+- **Model (`Data`)**  
+  - Representa a tabela `data` no banco de dados.  
+  - Utilizada pelo `AnalysisService` para consultar os valores dos últimos 10 anos.
+
+- **Controller (`AnalysisController`)**  
+  - Expõe o endpoint `/api/analysis`.  
+  - Recebe a requisição e delega o processamento para o service.
+
+- **Service (`AnalysisService`)**  
+  - Consulta os valores da tabela `data` referentes aos últimos 10 anos via `Data::where(...)`.  
+  - Aplica o multiplicador `1.07` e soma os valores.  
+  - Retorna o resultado arredondado como float.
+
+- **Resposta JSON**  
+  - O controller retorna o resultado em formato JSON:
+    ```json
+    { "result": 123.45 }
+
+## Boas Práticas Aplicadas
+
+- **Injeção de dependência**: o service (`AnalysisService`) é injetado via construtor no controller, facilitando testes e desacoplamento da lógica de negócio.  
+- **Tratamento de erros**: uso de `try/catch` para capturar exceções, registro em logs e retorno de resposta genérica sinalizando o erro ao cliente.  
+- **Docker simplificado**: toda a construção e execução da aplicação é feita via Dockerfile. O Dockerfile instala dependências, cria o banco SQLite, ajusta permissões, gera `APP_KEY`, aplica migrations e executa seeders automaticamente.  
+- **Volumes e permissões**: o Dockerfile já garante permissões corretas em `storage`, `bootstrap/cache` e `database`, preservando dados e permitindo execução sem problemas de acesso.  
+- **Código limpo e organizado**: separação clara entre controller, service e model (`Data`), seguindo padrões Laravel e facilitando manutenção.
+
+
+
+
+
+
